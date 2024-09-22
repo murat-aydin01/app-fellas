@@ -1,24 +1,22 @@
 # Vite (Frontend) için
-frontend/node_modules/    # Vite projesinin bağımlılıkları
-frontend/dist/            # Vite'in oluşturduğu build klasörü
-frontend/.env             # Vite ortam değişkenleri dosyası
+frontend/node_modules/    
+frontend/dist/           
+frontend/.env           
 
 # Node.js (Backend) için
-backend/node_modules/     # Backend'in bağımlılıkları
-backend/.env              # Ortam değişkenleri dosyası (veritabanı bağlantıları, API anahtarları vs.)
-backend/logs/             # Log dosyaları
-backend/tmp/              # Geçici dosyalar
+backend/node_modules/     
+backend/.env              
+backend/logs/           
+backend/tmp/             
 
 # Genel kurallar
-.DS_Store                 # macOS sistem dosyası
-Thumbs.db                 # Windows sistem dosyası
-*.log                     # Log dosyaları (hem frontend hem backend için geçerli olabilir)
-npm-debug.log*            # npm debug log dosyaları
-yarn-debug.log*           # Yarn debug log dosyaları
-yarn-error.log*           # Yarn hata log dosyaları
+.DS_Store                
+Thumbs.db                
+*.log                    
+npm-debug.log*           
+yarn-debug.log*          
+yarn-error.log*        
 
 # IDE/Editor Konfigürasyonları
-.vscode/                  # VS Code konfigürasyonları (paylaşmak istemezsen)
-.idea/                    # JetBrains IDE'leri için proje dosyaları (WebStorm, IntelliJ vs.)
-
-node_modules/
+.vscode/                
+.idea/                  
