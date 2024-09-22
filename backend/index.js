@@ -1,20 +1,51 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const Reservation = require('./models/Reservation'); // Rezervasyon modeli
 
 const app = express();
 
 // Middleware'ler
-app.use(cors());
 app.use(express.json());
 
-// Basit bir route (test amaçlı)
-app.get('/', (req, res) => {
-  res.send('Backend çalışıyor!');
+// MongoDB bağlantısı (Atlas)
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB Atlas bağlantısı başarılı'))
+  .catch((err) => console.log('MongoDB bağlantı hatası:', err));
+
+// Uçuş rezervasyonu kaydetme (POST)
+app.post('/api/reserve', async (req, res) => {
+  try {
+    const { flightId, userId, flightDate } = req.body;
+
+    // Uçuş tarihini kontrol et (geçmiş bir tarih için rezervasyon yapılmasın)
+    const currentDate = new Date();
+    if (new Date(flightDate) < currentDate) {
+      return res.status(400).json({ message: 'Geçmiş bir tarih için rezervasyon yapılamaz.' });
+    }
+
+    const reservation = new Reservation({ flightId, userId, flightDate });
+    await reservation.save();
+    res.status(201).json({ message: 'Uçuş başarıyla rezerve edildi!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Bir hata oluştu', error });
+  }
 });
+
+
+// Rezervasyonları listeleme (GET)
+app.get('/api/flights', async (req, res) => {
+  try {
+    const currentDate = new Date();
+    // Geçmişteki uçuşları hariç tut
+    const reservations = await Reservation.find({ flightDate: { $gte: currentDate } });
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(500).json({ message: 'Bir hata oluştu', error });
+  }
+});
+
 
 // Sunucuyu başlatma
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Backend http://localhost:${PORT} adresinde çalışıyor`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
