@@ -2,16 +2,23 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const Reservation = require('./models/Reservation'); // Rezervasyon modeli
+const axios = require('axios');
+const cors = require('cors');
 
 const app = express();
 
 // Middleware'ler
 app.use(express.json());
+app.use(cors()); // Frontend ile bağlantı için gerekli
 
 // MongoDB bağlantısı (Atlas)
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Atlas bağlantısı başarılı'))
-  .catch((err) => console.log('MongoDB bağlantı hatası:', err));
+  .catch((err) => {
+    console.error('MongoDB bağlantı hatası:', err);
+    process.exit(1);
+  });
+
 
 // Uçuş rezervasyonu kaydetme (POST)
 app.post('/api/reserve', async (req, res) => {
@@ -32,7 +39,6 @@ app.post('/api/reserve', async (req, res) => {
   }
 });
 
-
 // Rezervasyonları listeleme (GET)
 app.get('/api/flights', async (req, res) => {
   try {
@@ -45,6 +51,22 @@ app.get('/api/flights', async (req, res) => {
   }
 });
 
+// Schiphol Flight API üzerinden uçuş bilgilerini alma (proxy)
+app.get('/api/flight-info', async (req, res) => {
+  try {
+    const response = await axios.get('https://api.schiphol.nl/public-flights/flights', {
+      headers: {
+        'app_id': process.env.SCHIPHOL_APP_ID,
+        'app_key': process.env.SCHIPHOL_APP_KEY,
+        'ResourceVersion': 'v4'
+      }
+    });
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    res.status(500).json({ message: 'Schiphol API hatası', error });
+  }
+});
 
 // Sunucuyu başlatma
 const PORT = process.env.PORT || 5000;
