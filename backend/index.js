@@ -43,7 +43,6 @@ app.post('/api/reserve', async (req, res) => {
 app.get('/api/flights', async (req, res) => {
   try {
     const currentDate = new Date();
-    // Geçmişteki uçuşları hariç tut
     const reservations = await Reservation.find({ flightDate: { $gte: currentDate } });
     res.status(200).json(reservations);
   } catch (error) {

@@ -9,16 +9,18 @@ function Home() {
     const fetchFlights = async () => {
       try {
         const response = await axios.get('/api/flight-info');
-        setFlights(response.data);
+        setFlights(response.data.flights);
         setLoading(false);
+        console.log(response.data.flights)
       } catch (error) {
         console.error('API hatası:', error);
         setLoading(false);
       }
     };
-
+  
     fetchFlights();
   }, []);
+  
 
   if (loading) {
     return <div>Yükleniyor...</div>;
