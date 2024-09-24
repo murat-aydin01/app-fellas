@@ -53,14 +53,24 @@ app.get('/api/flights', async (req, res) => {
 // Schiphol Flight API üzerinden uçuş bilgilerini alma (proxy)
 app.get('/api/flight-info', async (req, res) => {
   try {
+    // Frontend'den route ve flightDirection parametrelerini alalım
+    const { route, flightDirection, scheduleDate } = req.query;
+
+    // Schiphol API'ye parametrelerle istek gönderelim
     const response = await axios.get('https://api.schiphol.nl/public-flights/flights', {
       headers: {
         'app_id': process.env.SCHIPHOL_APP_ID,
         'app_key': process.env.SCHIPHOL_APP_KEY,
         'ResourceVersion': 'v4'
+      },
+      params: {
+        route: route, // Uçuş rotasını belirlemek için
+        flightDirection: flightDirection, // Uçuş yönüne göre filtreleme (A = arrival, D = departure)
+        scheduleDate: scheduleDate
       }
     });
 
+    // Gelen veriyi frontend'e döndürelim
     res.status(200).json(response.data);
   } catch (error) {
     res.status(500).json({ message: 'Schiphol API hatası', error });
